@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // Get credentials for the GKE cluster
-                    sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}"
+                    sh "gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project sound-inn-437705-m4"
 
                     // Deploy the application
                     sh """
