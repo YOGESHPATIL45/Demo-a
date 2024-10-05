@@ -13,9 +13,7 @@ pipeline {
             steps {
                 script {
                     // Get credentials for the GKE cluster
-                    sh "sudo apt-get install kubectl"
-                        "gcloud components install kubectl" 
-                        "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}"
+                    sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}"
 
                     // Deploy the application
                     sh """
