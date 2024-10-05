@@ -12,12 +12,9 @@ pipeline {
         stage('Deploy to GKE') {
             steps {
                 script {
-                    sh 'gcloud config set project $GKE_PROJECT'
-                    sh 'gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE'
+                    sh 'gcloud config set project $PROJECT_ID'
+                    sh 'gcloud container clusters get-credentials $ CLUSTER_NAME --zone $REGION'
                     
-                    // Apply Kubernetes manifests (assumes you have a deployment.yaml file)
-                    sh 'kubectl apply -f k8s/deployment.yaml'
-                    """
                 }
             }
         }
