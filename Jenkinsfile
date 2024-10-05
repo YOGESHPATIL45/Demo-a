@@ -4,7 +4,7 @@ pipeline {
     environment {
         PROJECT_ID = 'sound-inn-437705-m4'
         CLUSTER_NAME = 'autopilot-cluster-1'
-        ZONE = 'us-central1-c'
+        REGION = 'us-central1'
         DOCKER_IMAGE = "us-central1-docker.pkg.dev/sound-inn-437705-m4/image/nginx"
     }
 
@@ -12,10 +12,8 @@ pipeline {
         stage('Deploy to GKE') {
             steps {
                 script {
-                    sh "gcloud components install kubectl"
-                        "sudo apt install kubectl"
                     // Get credentials for the GKE cluster
-                    sh "gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project sound-inn-437705-m4"
+                    sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${REGION} --project ${PROJECT_ID}"
 
                     // Deploy the application
                     sh """
