@@ -12,9 +12,14 @@ pipeline {
         stage('Deploy to GKE') {
             steps {
                 script {
-                    sh 'gcloud config set project $PROJECT_ID'
-                    sh 'gcloud container clusters get-credentials $ CLUSTER_NAME --zone $REGION'
+                    // Set the project in gcloud
+                    sh "gcloud config set project ${PROJECT_ID}"
                     
+                    // Get credentials for the GKE cluster
+                    sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${REGION}"
+                    
+                    // Optionally, add deployment steps here, e.g., deploying your Docker image
+                    // sh "kubectl apply -f deployment.yaml" // Uncomment and adjust as necessary
                 }
             }
         }
