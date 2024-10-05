@@ -12,6 +12,8 @@ pipeline {
         stage('Deploy to GKE') {
             steps {
                 script {
+                    sh "gcloud components install kubectl"
+                        "sudo apt install kubectl"
                     // Get credentials for the GKE cluster
                     sh "gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project sound-inn-437705-m4"
 
