@@ -17,8 +17,8 @@ pipeline {
 
                     // Deploy the application
                     sh """
-                    kubectl apply -f k8s/deployment.yaml
-                    kubectl apply -f k8s/service.yaml
+                    kubectl apply -f deployment.yaml
+                    kubectl apply -f service.yaml
                     """
                 }
             }
