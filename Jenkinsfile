@@ -4,33 +4,39 @@ pipeline {
     environment {
         PROJECT_ID = 'sound-inn-437705-m4'
         CLUSTER_NAME = 'autopilot-cluster-1'
-        REGION = 'us-central1'
-        DOCKER_IMAGE = "us-central1-docker.pkg.dev/sound-inn-437705-m4/image/nginx"
+        CLUSTER_REGION =  'us-central1' // Specify your GCP region
+        IMAGE_NAME = 'us-central1-docker.pkg.dev/sound-inn-437705-m4/image/nginx' // Specify the existing image
+        GCP_CREDENTIALS = credentials('gcp-service-account') // GCP service account credentials
     }
 
     stages {
-        stage('Deploy to GKE') {
+        stage('Authenticate to GCP') {
             steps {
-                script {
-                    // Set the project in gcloud
-                    sh "gcloud config set project ${PROJECT_ID}"
-                    
-                    // Get credentials for the GKE cluster
-                    sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${REGION}"
-                    
-                    // Optionally, add deployment steps here, e.g., deploying your Docker image
-                    // sh "kubectl apply -f deployment.yaml" // Uncomment and adjust as necessary
+                // Authenticate to Google Cloud with service account credentials
+                withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GCP_KEYFILE')]) {
+                    sh 'gcloud auth activate-service-account --key-file=$GCP_KEYFILE'
                 }
             }
         }
-    }
 
-    post {
-        success {
-            echo 'Deployment succeeded!'
+        stage('Connect to GKE Cluster') {
+            steps {
+                // Configure kubectl to use the target GKE cluster with region
+                sh "gcloud container clusters get-credentials $CLUSTER_NAME --region $CLUSTER_REGION --project $PROJECT_ID"
+            }
         }
-        failure {
-            echo 'Deployment failed!'
+
+        stage('Deploy to GKE') {
+            steps {
+                // Deploy the Nginx container to GKE
+                sh """
+                kubectl create deployment nginx-app --image=$IMAGE_NAME || \
+                kubectl set image deployment/nginx-app nginx-app=$IMAGE_NAME
+                """
+                
+                // Expose the Nginx deployment as a service (NodePort)
+                sh 'kubectl expose deployment nginx-app --type=NodePort --port=80 || true'
+            }
         }
     }
 }
